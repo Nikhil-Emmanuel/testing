@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>ILY SONA</title>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   PHOTOS — PUT YOUR IMAGE PATHS HERE. This is the only place to edit them.
+
+   Paths are relative to this file, e.g. "assets/web/img1.jpg"
+   Leave any entry as "" and it is skipped cleanly — the station simply has
+   no picture and the gallery closes up around the gap. Nothing breaks.
+   ═══════════════════════════════════════════════════════════════════════ */
+window.PHOTOS = {
+
+  /* the three pictures inside the station story */
+  story: {
+    then: "https://raw.githubusercontent.com/Nikhil-Emmanuel/testing/refs/heads/main/assets/1 (1).jpg",   // 01 · Then          — "Before I made it hard"
+    cost: "https://raw.githubusercontent.com/Nikhil-Emmanuel/testing/refs/heads/main/assets/1 (2).jpg",   // 03 · The hard part — "What it cost you"
+    now:  "https://raw.githubusercontent.com/Nikhil-Emmanuel/testing/refs/heads/main/assets/1 (3).jpg"    // 05 · Now           — "What's actually different"
+  },
+
+  /* the gallery grid. Add or remove rows freely. */
+  gallery: [
+    { src: "https://raw.githubusercontent.com/Nikhil-Emmanuel/testing/refs/heads/main/assets/1 (8).jpg", caption: "You, holding flowers, unimpressed with me" },
+    { src: "https://raw.githubusercontent.com/Nikhil-Emmanuel/testing/refs/heads/main/assets/1 (7).jpg", caption: "My favourite of us" },
+    { src: "https://raw.githubusercontent.com/Nikhil-Emmanuel/testing/refs/heads/main/assets/1 (6).jpg", caption: "Leaned in lovingly" },
+    { src: "https://raw.githubusercontent.com/Nikhil-Emmanuel/testing/refs/heads/main/assets/1 (5).jpg", caption: "A memorable afternoon I'd trade a lot for" },
+    { src: "https://raw.githubusercontent.com/Nikhil-Emmanuel/testing/refs/heads/main/assets/1 (4).jpg", caption: "You are my sunshine & moonshine" }
+  ]
+};
+</script>
+<meta name="description" content="An apology, and a letter that is already written." />
+<meta name="theme-color" content="#0B0710" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Great+Vibes&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+/* =========================================================================
+   12:00 — MYSORE ROAD
+   Direction: "The Platform Clock" — the page runs along a metro line,
+   each station a chapter, terminating where the letter waits.
+
+   Palette arc is narrative: midnight/plum at the start (regret) warming
+   to rose + gold at the terminus (hope). Type from the project's existing
+   pairing — Cormorant Infant + Great Vibes — with Inter for signage.
+
+   No external JS. Everything degrades to a readable vertical page.
+   ========================================================================= */
+
+:root{
+  /* night → dawn */
+  --night:#0B0710;
+  --night-2:#140B18;
+  --plum:#1E1020;
+  --plum-2:#2A1428;
+
+  --rose:#EC4899;
+  --rose-soft:#F472B6;
+  --rose-dim:#8E3A62;
+  --gold:#F0C27B;
+  --gold-deep:#C99B54;
+
+  --cream:#F6EAE6;
+  --cream-dim:#CBB4B9;
+  --muted:#8E7A86;
+  --line:rgba(246,234,230,.14);
+  --line-2:rgba(246,234,230,.08);
+
+  --serif:'Cormorant Infant', Georgia, 'Times New Roman', serif;
+  --script:'Great Vibes', 'Cormorant Infant', cursive;
+  --sans:'Inter', ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-soft:cubic-bezier(.34,1.2,.64,1);
+
+  --shell:min(1120px, 100% - 3rem);
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+/* no smooth-scroll: it fights the scrubbed track and there are no anchors */
+body{
+  background:var(--night);
+  color:var(--cream);
+  font-family:var(--serif);
+  font-size:clamp(17px, 1.05vw + 14px, 21px);
+  line-height:1.62;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{ max-width:100%; display:block; image-orientation:from-image; }
+::selection{ background:var(--rose); color:#fff; }
+
+a:focus-visible, button:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:4px;
+  border-radius:4px;
+}
+
+/* ---------- ambient: slow drifting light + petals ---------- */
+#ambient{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+#ambient .glow{
+  position:absolute; border-radius:50%; filter:blur(58px); opacity:.5;
+  animation:drift 34s var(--ease) infinite alternate;
+}
+.glow.g1{ width:40vw; height:40vw; left:-10vw; top:-8vw; background:radial-gradient(circle,#5B1E45 0%, transparent 68%); }
+.glow.g2{ width:36vw; height:36vw; right:-9vw; top:26vh; background:radial-gradient(circle,#3A1B4D 0%, transparent 68%); animation-delay:-11s; }
+.glow.g3{ width:44vw; height:44vw; left:22vw; bottom:-18vw; background:radial-gradient(circle,#6B4620 0%, transparent 70%); animation-delay:-21s; opacity:.34; }
+@keyframes drift{
+  from{ transform:translate3d(0,0,0) scale(1); }
+  to{ transform:translate3d(4vw,-3vh,0) scale(1.16); }
+}
+/* no will-change here: 16 promoted layers cost far more than they buy */
+.petal{
+  position:absolute; top:-6vh; opacity:0;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  0%{ transform:translate3d(0,-10vh,0) rotate(0deg); opacity:0; }
+  12%{ opacity:var(--o,.5); }
+  88%{ opacity:var(--o,.5); }
+  100%{ transform:translate3d(var(--drift,40px),112vh,0) rotate(420deg); opacity:0; }
+}
+
+/* ---------- shared layout ---------- */
+.shell{ width:var(--shell); margin-inline:auto; }
+section{ position:relative; z-index:1; }
+
+.eyebrow{
+  font-family:var(--sans);
+  font-size:.7rem; font-weight:500;
+  letter-spacing:.34em; text-transform:uppercase;
+  color:var(--gold); opacity:.85;
+}
+.script{ font-family:var(--script); color:var(--rose-soft); }
+
+h1,h2,h3{ font-weight:400; line-height:1.1; letter-spacing:-.01em; }
+h2{ font-size:clamp(2.1rem, 5vw, 3.6rem); }
+p{ color:var(--cream-dim); }
+p strong{ color:var(--cream); font-weight:600; }
+
+/* =========================================================================
+   1. OPENING GATE
+   ========================================================================= */
+#gate{
+  position:fixed; inset:0; z-index:90;
+  display:grid; place-items:center; text-align:center;
+  background:radial-gradient(120% 100% at 50% 40%, var(--plum) 0%, var(--night) 70%);
+  transition:opacity 1.1s var(--ease), visibility 1.1s, transform 1.1s var(--ease);
+  padding:2rem;
+  overflow:hidden;
+}
+#gate.gone{ opacity:0; visibility:hidden; pointer-events:none; transform:scale(1.18); }
+#gate .for{ font-family:var(--script); font-size:clamp(3rem,11vw,6.5rem); color:var(--rose-soft); line-height:1; }
+#gate .sub{ margin-top:1.4rem; font-size:1.05rem; color:var(--muted); font-style:italic; }
+#gate button{
+  margin-top:3rem; cursor:pointer;
+  background:transparent; color:var(--cream);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:.95rem 2.6rem;
+  font-family:var(--sans); font-size:.76rem; font-weight:500;
+  letter-spacing:.26em; text-transform:uppercase;
+  transition:border-color .3s var(--ease), background .3s var(--ease), color .3s var(--ease);
+}
+#gate button:hover{ border-color:var(--rose); background:rgba(236,72,153,.1); color:#fff; }
+/* the landing flies in rather than fading */
+#gate .inner{ position:relative; z-index:2; }
+.gate-in{ animation:flyIn 1.5s var(--ease-soft) both; }
+@keyframes flyIn{
+  0%{   opacity:0; transform:translate3d(0,140px,0) scale(.62) rotate(-5deg); filter:blur(12px); }
+  55%{  opacity:1; filter:blur(0); }
+  100%{ opacity:1; transform:none; filter:blur(0); }
+}
+
+/* =========================================================================
+   2. HERO — the platform clock
+   ========================================================================= */
+#hero{
+  min-height:100svh;
+  display:grid; place-items:center;
+  text-align:center;
+  padding:7rem 0 5rem;
+}
+#hero .title{
+  font-size:clamp(3.2rem, 12vw, 9rem);
+  line-height:.92;
+  letter-spacing:-.03em;
+  background:linear-gradient(178deg, var(--cream) 18%, var(--rose-soft) 62%, var(--gold) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent; color:transparent;
+}
+#hero .lede{
+  max-width:42ch; margin:2rem auto 0;
+  font-size:1.12rem; font-style:italic; color:var(--cream-dim);
+}
+
+/* countdown */
+.clock{
+  margin-top:3.4rem;
+  display:flex; justify-content:center; gap:clamp(.6rem,2.4vw,1.9rem);
+  flex-wrap:wrap;
+}
+.unit{ min-width:74px; }
+.unit .num{
+  font-family:var(--sans); font-weight:300;
+  font-size:clamp(2rem,5.4vw,3.5rem);
+  color:var(--cream); letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;
+  display:block; line-height:1;
+}
+.unit .lab{
+  display:block; margin-top:.7rem;
+  font-family:var(--sans); font-size:.6rem; font-weight:500;
+  letter-spacing:.28em; text-transform:uppercase; color:var(--muted);
+}
+.clock-note{
+  margin-top:2.4rem;
+  font-family:var(--sans); font-size:.68rem; font-weight:400;
+  letter-spacing:.22em; text-transform:uppercase; color:var(--gold); opacity:.8;
+}
+.clock.hide{ display:none; }   /* swapped for the "it's time" note once 12:00 arrives */
+
+.scroll-cue{
+  margin-top:4rem;
+  font-family:var(--sans); font-size:.62rem; letter-spacing:.3em;
+  text-transform:uppercase; color:var(--muted);
+}
+.scroll-cue span{
+  display:block; width:1px; height:52px; margin:1rem auto 0;
+  background:linear-gradient(var(--rose), transparent);
+  animation:cue 2.4s var(--ease) infinite;
+}
+@keyframes cue{ 0%,100%{ transform:scaleY(.35); opacity:.35; transform-origin:top; } 50%{ transform:scaleY(1); opacity:1; transform-origin:top; } }
+
+/* =========================================================================
+   3. CONFESSION — vertical scroll-revealed lines
+   ========================================================================= */
+#open{ padding:14vh 0 12vh; }
+#open .stack{ max-width:34ch; margin-inline:auto; }
+#open .line{
+  font-size:clamp(1.5rem,3.6vw,2.5rem);
+  line-height:1.34; color:var(--cream);
+  margin-bottom:1.5rem;
+}
+#open .line.dim{ color:var(--muted); }
+
+/* =========================================================================
+   4. THE LINE — pinned horizontal metro track (desktop)
+   ========================================================================= */
+#line-wrap{ position:relative; }
+#line-sticky{
+  position:sticky; top:0;
+  height:100svh; overflow:hidden;
+  display:flex; flex-direction:column; justify-content:center;
+}
+#track{
+  display:flex; align-items:center;
+  gap:clamp(3rem,7vw,8rem);
+  padding-inline:max(3rem, calc(50vw - 24rem));
+  /* deliberately no will-change: this layer is ~3300px wide and promoting it
+     permanently costs far more GPU memory than the scrub saves */
+}
+.station{
+  flex:0 0 auto;
+  width:min(30rem, 78vw);
+}
+.station .no{
+  font-family:var(--sans); font-size:.68rem; font-weight:500;
+  letter-spacing:.3em; color:var(--gold); opacity:.75;
+  display:block; margin-bottom:1.1rem;
+}
+.station h3{
+  font-size:clamp(1.9rem,3.6vw,2.9rem);
+  margin-bottom:1.3rem;
+  color:var(--cream);
+}
+.station p{ font-size:1.06rem; }
+.station p + p{ margin-top:1rem; }
+.station .photo{
+  position:relative;
+  margin-bottom:1.8rem;
+  border-radius:6px; overflow:hidden;
+  border:1px solid var(--line-2);
+  box-shadow:0 30px 70px rgba(0,0,0,.55);
+  aspect-ratio:4/3;
+  /* on short viewports the photo yields so the words are never clipped */
+  max-height:32svh;
+}
+.station .photo img{
+  width:100%; height:100%; object-fit:cover;
+  /* most of these are portrait in a landscape frame; a dead-centre crop cuts
+     faces off, so favour the upper third where they actually are */
+  object-position:center 30%;
+  transition:transform 1.4s var(--ease);
+}
+/* dim with a cheap overlay rather than an animated filter on a big bitmap */
+.station .photo::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:rgba(11,7,16,.34);
+  transition:opacity 1s var(--ease);
+}
+.station.live .photo::after{ opacity:.35; }
+.station.live .photo img{ transform:scale(1.02); }
+
+/* the rail beneath the track */
+.rail{
+  position:absolute; left:0; right:0; bottom:12vh;
+  height:1px; background:var(--line-2);
+  z-index:2; pointer-events:none;
+}
+.rail .fill{
+  position:absolute; inset:0 auto 0 0; width:0%;
+  background:linear-gradient(90deg, var(--rose-dim), var(--rose), var(--gold));
+  transition:width .12s linear;
+}
+.rail .dot{
+  position:absolute; top:50%; left:0;
+  width:9px; height:9px; margin:-4px 0 0 -4px;
+  border-radius:50%; background:var(--gold);
+  box-shadow:0 0 0 5px rgba(240,194,123,.16), 0 0 22px rgba(240,194,123,.75);
+  transition:left .12s linear;
+}
+.rail-labels{
+  position:absolute; left:0; right:0; bottom:calc(12vh - 2.4rem);
+  z-index:2; pointer-events:none;
+  display:flex; justify-content:space-between;
+  padding-inline:clamp(1.5rem,5vw,4rem);
+  font-family:var(--sans); font-size:.58rem; font-weight:500;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--muted);
+}
+.rail-labels b{ color:var(--gold); font-weight:500; }
+
+/* =========================================================================
+   5. THE LOCKED LETTER  ★ centrepiece
+   ========================================================================= */
+#letter{
+  min-height:100svh;
+  display:grid; place-items:center;
+  text-align:center;
+  padding:16vh 0;
+}
+.letter-stage{ perspective:1400px; }
+
+.envelope{
+  position:relative;
+  width:min(30rem, 84vw);
+  margin-inline:auto;
+  cursor:not-allowed;
+  transition:transform .8s var(--ease);
+}
+.envelope.shake{ animation:denied .55s var(--ease); }
+@keyframes denied{
+  0%,100%{ transform:translateX(0) rotate(0); }
+  15%{ transform:translateX(-9px) rotate(-1deg); }
+  35%{ transform:translateX(8px) rotate(.8deg); }
+  55%{ transform:translateX(-6px) rotate(-.6deg); }
+  78%{ transform:translateX(4px) rotate(.4deg); }
+}
+
+/* the paper — real text, heavily blurred so it reads as writing, not lorem */
+.paper{
+  position:relative;
+  aspect-ratio:1/1.32;
+  background:
+    linear-gradient(168deg, #FBF3E6 0%, #F3E4D2 52%, #E9D5BE 100%);
+  border-radius:3px;
+  box-shadow:
+    0 2px 0 rgba(255,255,255,.5) inset,
+    0 40px 90px rgba(0,0,0,.62),
+    0 0 0 1px rgba(240,194,123,.18);
+  padding:clamp(2rem,5vw,3.4rem);
+  text-align:left;
+  overflow:hidden;
+  transform:rotate(-1.1deg);
+}
+.paper::after{ /* fibre + fold shading */
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(120,80,50,.09) 0%, transparent 12%, transparent 88%, rgba(120,80,50,.1) 100%),
+    radial-gradient(90% 60% at 50% 0%, rgba(255,255,255,.5), transparent 60%);
+}
+.paper .hand{
+  filter:blur(5.2px);
+  opacity:.62;
+  color:#3A2A38;
+  font-family:var(--script);
+  font-size:clamp(1.15rem,2.5vw,1.6rem);
+  line-height:2.05;
+  user-select:none;
+}
+.paper .hand .short{ display:block; width:62%; }
+.paper .hand .shorter{ display:block; width:44%; }
+.paper .seal{
+  position:absolute; right:clamp(1.4rem,4vw,2.4rem); bottom:clamp(1.4rem,4vw,2.4rem);
+  width:52px; height:52px; border-radius:50%;
+  background:radial-gradient(circle at 34% 30%, #E0537F, #9B1D45 70%);
+  box-shadow:0 6px 16px rgba(0,0,0,.4);
+  filter:blur(.4px);
+}
+
+/* the lock sits over the paper */
+.lock{
+  position:absolute; left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  width:clamp(86px,17vw,116px); height:auto;
+  filter:drop-shadow(0 18px 34px rgba(0,0,0,.75));
+  z-index:3;
+}
+/* Gradient paints are set as SVG presentation attributes, never as CSS
+   url(#id). Opened over file://, Chrome resolves a CSS fragment paint to an
+   absolute file: URL, treats it as a separate origin and refuses it — which
+   left the padlock and the train unpainted. Attributes are same-document
+   references and work from the filesystem. */
+.lock .shackle{ fill:none; stroke-width:9; stroke-linecap:round; }
+.lock .hole{ fill:#2A1428; }
+.lock .shackle{
+  transform-box:view-box; transform-origin:72px 46px;
+  transition:transform 1.2s var(--ease-soft);
+}
+/* Once 12:00 passes the shackle swings open on its right leg. The paper stays
+   blurred on purpose — the real letter is the one handed over at the station,
+   so the page acknowledges the moment without spoiling it. */
+.envelope.arrived{ cursor:default; }
+.envelope.arrived .lock .shackle{ transform:rotate(-34deg); }
+.envelope.arrived .lock{
+  filter:drop-shadow(0 18px 34px rgba(0,0,0,.75)) drop-shadow(0 0 20px rgba(240,194,123,.55));
+}
+
+.letter-note{
+  margin-top:3.4rem;
+  max-width:36ch; margin-inline:auto;
+  font-family:var(--sans);
+  font-size:clamp(.86rem,1.5vw,.98rem);
+  font-weight:300; line-height:1.85;
+  color:var(--cream); letter-spacing:.015em;
+}
+.letter-note b{ color:var(--gold); font-weight:500; white-space:nowrap; }
+.denied-msg{
+  margin-top:1.3rem; min-height:1.5em;
+  font-family:var(--sans); font-size:.72rem; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--rose-soft);
+  opacity:0; transition:opacity .4s var(--ease);
+}
+.denied-msg.on{ opacity:.9; }
+
+/* =========================================================================
+   6. GALLERY
+   ========================================================================= */
+#gallery{ padding:14vh 0; }
+#gallery .grid{
+  display:grid; gap:clamp(1rem,2.4vw,2rem);
+  grid-template-columns:repeat(6,1fr);
+}
+#gallery figure{
+  position:relative; overflow:hidden; border-radius:5px;
+  border:1px solid var(--line-2);
+  box-shadow:0 26px 60px rgba(0,0,0,.5);
+}
+/* A repeating 4-photo rhythm (4+2 / 2+4 across a 6-column grid) so the grid
+   survives any number of photos. Fixed nth-child(1..4) rules left a 5th photo
+   at span 1 — a sliver. The last rules catch a final photo that would
+   otherwise sit alone on its row and give it the full width instead. */
+#gallery figure{ grid-column:span 3; aspect-ratio:4/3; }
+#gallery figure:nth-child(4n+1){ grid-column:span 4; aspect-ratio:16/11; }
+#gallery figure:nth-child(4n+2){ grid-column:span 2; aspect-ratio:3/4; }
+#gallery figure:nth-child(4n+3){ grid-column:span 2; aspect-ratio:3/4; }
+#gallery figure:nth-child(4n+4){ grid-column:span 4; aspect-ratio:16/11; }
+#gallery figure:last-child:nth-child(4n+1),
+#gallery figure:last-child:nth-child(4n+3){ grid-column:span 6; aspect-ratio:16/9; }
+#gallery img{
+  width:100%; height:100%; object-fit:cover;
+  object-position:center 32%;
+  transform:scale(1.06);
+  transition:transform 1.6s var(--ease);
+}
+#gallery figure::after{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:1;
+  background:rgba(11,7,16,.38);
+  transition:opacity 1.1s var(--ease);
+}
+#gallery figure.live::after{ opacity:.4; }
+#gallery figure.live img{ transform:scale(1); }
+#gallery figcaption{
+  position:absolute; left:0; right:0; bottom:0;
+  padding:2.4rem 1.4rem 1.1rem; z-index:2;
+  background:linear-gradient(transparent, rgba(11,7,16,.86));
+  font-family:var(--sans); font-size:.66rem; font-weight:400;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--cream-dim);
+}
+
+/* =========================================================================
+   7. PROMISES
+   ========================================================================= */
+#promises{ padding:12vh 0 14vh; }
+#promises ol{ list-style:none; counter-reset:p; max-width:44rem; margin-top:4rem; }
+#promises li{
+  counter-increment:p;
+  display:grid; grid-template-columns:3.4rem 1fr; gap:1.4rem;
+  padding:1.9rem 0;
+  border-top:1px solid var(--line-2);
+}
+#promises li:last-child{ border-bottom:1px solid var(--line-2); }
+#promises li::before{
+  content:counter(p,decimal-leading-zero);
+  font-family:var(--sans); font-size:.72rem; font-weight:500;
+  letter-spacing:.16em; color:var(--gold); opacity:.7; padding-top:.5rem;
+}
+#promises li p{ font-size:1.06rem; }
+#promises li b{ color:var(--cream); font-weight:600; display:block; margin-bottom:.3rem; font-size:1.16rem; }
+
+/* =========================================================================
+   8. CLOSING
+   ========================================================================= */
+#close{
+  min-height:100svh; display:grid; place-items:center;
+  text-align:center; padding:14vh 0;
+}
+#close .big{
+  font-size:clamp(2.2rem,6.4vw,4.4rem); line-height:1.14;
+  max-width:20ch; margin-inline:auto; color:var(--cream);
+}
+#close .fine{ margin-top:2.6rem; max-width:40ch; margin-inline:auto; font-style:italic; }
+#close .sign{
+  margin-top:4.5rem;
+  font-family:var(--script); font-size:clamp(3rem,9vw,5rem);
+  color:var(--rose-soft); line-height:1;
+}
+#close .place{
+  margin-top:3.4rem;
+  font-family:var(--sans); font-size:.64rem; letter-spacing:.28em;
+  text-transform:uppercase; color:var(--muted);
+}
+
+/* =========================================================================
+   "LOVE YOU" SPRINKLES
+   Scattered through the ambient layer and across the landing.
+   ========================================================================= */
+.loveword{
+  position:absolute; top:-10vh;
+  font-family:var(--script);
+  white-space:nowrap; opacity:0;
+  animation:fallWord linear infinite;
+  text-shadow:0 0 18px rgba(236,72,153,.35);
+}
+@keyframes fallWord{
+  0%{   transform:translate3d(0,-12vh,0) rotate(var(--r,-8deg)); opacity:0; }
+  12%{  opacity:var(--o,.4); }
+  84%{  opacity:var(--o,.4); }
+  100%{ transform:translate3d(var(--drift,40px),118vh,0) rotate(calc(var(--r,-8deg) * -1.6)); opacity:0; }
+}
+/* the landing gets its own denser burst, above the gate backdrop */
+#gateSprinkles{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:1; }
+
+/* =========================================================================
+   METRO TRAIN — rides a curve down the right edge from the photos onward.
+   The path `d` is generated in JS at the container's real pixel size, so
+   getPointAtLength() returns usable coordinates with no viewBox scaling.
+   ========================================================================= */
+#metro{
+  position:fixed; top:0; right:clamp(4px,1.6vw,26px);
+  width:clamp(26px,7vw,104px); height:100svh;
+  z-index:6; pointer-events:none;
+  opacity:0; transition:opacity .9s var(--ease);
+}
+#metro.on{ opacity:1; }
+#metro svg{ width:100%; height:100%; overflow:visible; display:block; }
+.metro-rail{ fill:none; stroke:rgba(246,234,230,.13); stroke-width:2; stroke-linecap:round; }
+.metro-trail{ fill:none; stroke-width:2.5; stroke-linecap:round; }
+.metro-stop{ fill:var(--night); stroke:rgba(246,234,230,.28); stroke-width:2; transition:fill .45s var(--ease), stroke .45s var(--ease); }
+.metro-stop.passed{ fill:var(--gold); stroke:var(--gold); }
+.metro-train .win{ fill:#2A1428; opacity:.85; }
+.metro-train .lamp{ fill:#FFF3D6; }
+.metro-train{ filter:drop-shadow(0 0 12px rgba(240,194,123,.55)); }
+
+/* =========================================================================
+   THE ASK — end-of-page dialog, and the celebration behind it.
+
+   Structure adapted from the Claude design system: display serif at weight
+   400 with negative tracking (never bolder — bigger before bolder), an 8px
+   control radius against a 16px marquee-container radius, generous internal
+   padding, and colour-block surfaces carrying the depth instead of stacked
+   shadows. Its accent rule is the useful one here: keep the accent scarce on
+   individual controls, spend it generously on one full-bleed moment. So only
+   "Yes" is filled rose, and the celebration is where the colour is let out.
+   Palette stays this page's night/rose/gold, not Claude's cream and coral.
+   ========================================================================= */
+#ask{
+  position:fixed; inset:0; z-index:120;
+  display:grid; place-items:center;
+  padding:1.5rem;
+  background:rgba(8,5,12,.82);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  opacity:0; transition:opacity .5s var(--ease);
+}
+#ask[hidden]{ display:none; }
+#ask.in{ opacity:1; }
+
+.ask-card{
+  position:relative; z-index:2;
+  width:min(34rem, 100%);
+  text-align:center;
+  padding:clamp(2rem, 5vw, 3rem);
+  border-radius:16px;
+  background:linear-gradient(168deg, var(--plum-2) 0%, var(--plum) 55%, var(--night-2) 100%);
+  border:1px solid var(--line);
+  box-shadow:0 40px 90px rgba(0,0,0,.6);
+  opacity:0; transform:translateY(22px) scale(.96);
+  transition:transform .6s var(--ease-soft), opacity .5s var(--ease), border-color .6s var(--ease);
+}
+#ask.in .ask-card{ opacity:1; transform:none; }
+.ask-card.shake{ animation:denied .55s var(--ease); }   /* same refusal as the lock */
+
+.ask-q{
+  margin:1.1rem 0 0;
+  font-size:clamp(1.9rem, 5vw, 2.8rem);
+  line-height:1.12; letter-spacing:-.02em;
+  color:var(--cream);
+}
+.ask-sub{
+  margin:1rem auto 0; max-width:30ch;
+  font-size:1.02rem; font-style:italic; color:var(--cream-dim);
+}
+.ask-actions{
+  margin-top:2.4rem;
+  display:flex; gap:.9rem; justify-content:center; flex-wrap:wrap;
+}
+.ask-actions button{
+  cursor:pointer;
+  font-family:var(--sans); font-size:.86rem; font-weight:500;
+  padding:.9rem 1.6rem; min-height:52px; min-width:118px;
+  border-radius:8px; border:1px solid transparent;
+  transition:transform .45s var(--ease-soft), opacity .4s var(--ease),
+             background .3s var(--ease), border-color .3s var(--ease), color .3s var(--ease);
+}
+/* the only saturated control in the dialog */
+.btn-yes{ background:var(--rose); color:#fff; border-color:var(--rose); }
+.btn-yes:hover{ background:#F65FA8; }
+.btn-no{ background:transparent; color:var(--cream-dim); border-color:var(--line); }
+.btn-no:hover{ color:var(--cream); border-color:var(--rose-dim); }
+
+/* the full-bleed moment */
+.ask-card.won{
+  border-color:rgba(240,194,123,.5);
+  box-shadow:0 0 0 1px rgba(240,194,123,.18), 0 40px 110px rgba(236,72,153,.3);
+}
+.won-script{
+  margin-top:1.1rem;
+  font-family:var(--script); color:var(--rose-soft);
+  font-size:clamp(2.3rem, 8vw, 3.9rem);
+  /* Great Vibes has deep descenders and tall ascenders — at 1.06 the loops of
+     one line land on the capitals of the next. It needs the extra leading. */
+  line-height:1.22;
+}
+.won-note{
+  margin-top:1.7rem;
+  font-family:var(--sans); font-size:.66rem; font-weight:500;
+  letter-spacing:.28em; text-transform:uppercase; color:var(--gold);
+}
+
+/* z-index 1 sits between #ask's own scrim background and the card (z-index 2) */
+#fireworks{ position:fixed; inset:0; z-index:1; pointer-events:none; }
+#fireworks[hidden]{ display:none; }
+
+/* =========================================================================
+   REVEAL SYSTEM
+   ========================================================================= */
+.rv{ opacity:0; transform:translateY(26px); transition:opacity 1s var(--ease), transform 1s var(--ease); }
+.rv.live{ opacity:1; transform:none; }
+/* The hero arrives with more travel than the rest of the page.
+   Resting states are declared AFTER the start states and at equal-or-higher
+   specificity — `#hero .title.rv` and `#hero .rv.live` score identically, so
+   whichever is written last wins. Put the .live rules last or the title keeps
+   its 110px offset forever and lands on top of the paragraph. */
+#hero .rv{ transform:translate3d(0,80px,0) scale(.93); transition:opacity 1.1s var(--ease), transform 1.25s var(--ease-soft); }
+#hero .title.rv{ transform:translate3d(0,110px,0) scale(.86) rotate(-2deg); }
+#hero .rv.live,
+#hero .title.rv.live{ transform:none; }
+.rv.d1{ transition-delay:.12s; } .rv.d2{ transition-delay:.24s; }
+.rv.d3{ transition-delay:.36s; } .rv.d4{ transition-delay:.48s; }
+.rv.d5{ transition-delay:.6s; }
+
+/* =========================================================================
+   RESPONSIVE — the track becomes an honest vertical list on small screens
+   ========================================================================= */
+@media (max-width:860px){
+  #line-sticky{ position:static; height:auto; overflow:visible; display:block; padding:10vh 0; }
+  #track{
+    flex-direction:column; gap:9vh;
+    padding-inline:0; transform:none !important;
+    width:var(--shell); margin-inline:auto;
+  }
+  .station{ width:100%; }
+  .rail, .rail-labels{ display:none; }
+  #gallery .grid{ grid-template-columns:repeat(2,1fr); }
+  #gallery figure:nth-child(n){ grid-column:span 2; aspect-ratio:4/3; }
+  #promises li{ grid-template-columns:2.6rem 1fr; gap:1rem; }
+}
+
+/* =========================================================================
+   REDUCED MOTION — everything still readable, nothing moves
+   ========================================================================= */
+/* .calm-loops — OS asked for less motion: stop the endless drifting, keep the
+   page itself intact. The petals and sprinkles simply aren't created in JS. */
+html.calm-loops .glow{ animation:none; }
+
+/* .calm — ?motion=calm: strip everything, including the scroll-driven parts. */
+html.calm{ scroll-behavior:auto; }
+html.calm *, html.calm *::before, html.calm *::after{
+  animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;
+}
+html.calm .rv{ opacity:1; transform:none; }
+html.calm #line-sticky{ position:static; height:auto; overflow:visible; display:block; padding:10vh 0; }
+html.calm #track{ flex-direction:column; gap:9vh; padding-inline:0; transform:none !important; width:var(--shell); margin-inline:auto; }
+html.calm .station{ width:100%; }
+html.calm .rail, html.calm .rail-labels, html.calm #metro{ display:none; }
+html.calm #hero .rv, html.calm #hero .title.rv{ transform:none; }
+</style>
+</head>
+<body>
+
+<div id="ambient" aria-hidden="true">
+  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+</div>
+
+<!-- metro line down the right edge; wakes up once the photographs begin -->
+<div id="metro" aria-hidden="true">
+  <svg id="metroSvg">
+    <defs>
+      <linearGradient id="railGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#8E3A62"/>
+        <stop offset="55%" stop-color="#EC4899"/>
+        <stop offset="100%" stop-color="#F0C27B"/>
+      </linearGradient>
+      <linearGradient id="trainGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#FBE3B8"/>
+        <stop offset="55%" stop-color="#F0C27B"/>
+        <stop offset="100%" stop-color="#C98BA8"/>
+      </linearGradient>
+    </defs>
+    <path id="metroRail"  class="metro-rail" />
+    <path id="metroTrail" class="metro-trail" stroke="url(#railGrad)" />
+    <g id="metroStops"></g>
+    <g id="metroTrain" class="metro-train">
+      <rect class="car" x="-9" y="-15" width="18" height="30" rx="7" fill="url(#trainGrad)" />
+      <rect class="win" x="-5.5" y="-10" width="11" height="7"  rx="2.6" />
+      <rect class="win" x="-5.5" y="0"   width="11" height="6.5" rx="2.6" />
+      <circle class="lamp" cx="-3.6" cy="11.6" r="1.5" />
+      <circle class="lamp" cx="3.6"  cy="11.6" r="1.5" />
+    </g>
+  </svg>
+</div>
+
+<!-- ============================ GATE ============================ -->
+<div id="gate">
+  <div id="gateSprinkles" aria-hidden="true"></div>
+  <div class="inner">
+    <p class="for gate-in">Sonahakshi</p>
+    <p class="sub gate-in" style="animation-delay:.45s">There is something I need you to read.<br />Take your time with it.</p>
+    <button id="enter" class="gate-in" style="animation-delay:.9s" type="button">Begin</button>
+  </div>
+</div>
+
+<main>
+
+<!-- ============================ HERO ============================ -->
+<section id="hero">
+  <div class="shell">
+    <p class="eyebrow rv">An Apology · Not an Excuse</p>
+    <h1 class="title rv d1">I&nbsp;was&nbsp;wrong.</h1>
+    <p class="lede rv d2">
+      I&rsquo;m not going to ask you for anything on this page.
+      I only want you to see that I finally understand what I did &mdash;
+      and what I&rsquo;m doing about it.
+    </p>
+
+    <div class="clock rv d3" id="clock" aria-live="polite">
+      <div class="unit"><span class="num" id="dd">--</span><span class="lab">Days</span></div>
+      <div class="unit"><span class="num" id="hh">--</span><span class="lab">Hours</span></div>
+      <div class="unit"><span class="num" id="mm">--</span><span class="lab">Minutes</span></div>
+      <div class="unit"><span class="num" id="ss">--</span><span class="lab">Seconds</span></div>
+    </div>
+    <p class="clock-note rv d4" id="clockNote">Until 4 September 2026 · 12:00 · Mysore Road</p>
+
+    <p class="scroll-cue rv d5">Scroll<span></span></p>
+  </div>
+</section>
+
+<!-- ========================= CONFESSION ========================= -->
+<section id="open">
+  <div class="shell">
+    <div class="stack">
+      <p class="line rv">I have started this a hundred times.</p>
+      <p class="line rv">Every version began by defending myself.</p>
+      <p class="line dim rv">So I deleted every one of them.</p>
+      <p class="line rv">This one doesn&rsquo;t.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== THE LINE (track) ====================== -->
+<section id="line-wrap" aria-label="The journey, station by station">
+  <div id="line-sticky">
+    <div id="track">
+
+      <article class="station rv">
+        <span class="no">01 · Then</span>
+        <div class="photo" data-photo="then"></div>
+        <h3>Before I made it hard</h3>
+        <p>There was a version of us where you laughed easily and told me things
+           the moment you thought them. You weren&rsquo;t careful around me yet.</p>
+        <p>I want you to know I remember exactly what that felt like &mdash; because
+           I&rsquo;m the reason it stopped.</p>
+      </article>
+
+      <article class="station rv">
+        <span class="no">02 · Where it turned</span>
+        <h3>I stopped listening</h3>
+        <p>Somewhere along the way I started hearing your words and missing everything
+           underneath them. You would tell me you were hurting and I&rsquo;d hear it but didnt do anything about it.</p>
+        <p>You weren&rsquo;t asking me to be right. You were asking me to <strong>understand</strong>,
+           and be emotionally pro-active and intelligent, and I gave you neither.</p>
+      </article>
+
+      <article class="station rv">
+        <span class="no">03 · The hard part</span>
+        <div class="photo" data-photo="cost"></div>
+        <h3>What it cost you</h3>
+        <p>You made yourself isolated so that you dont get hurt by expectations. You started feeling peaceful and safe when you stopped sharing your feelings with me. I was the reason.</p>
+        <p>You carried us and our relationship alone with determination and called it love. <strong>That is what I did to you</strong>,
+           and there is no gentle way for me to say it.</p>
+      </article>
+
+      <article class="station rv">
+        <span class="no">04 · No excuses</span>
+        <h3>The reasons aren&rsquo;t yours to carry</h3>
+        <p>I could hand you explanations. Pressure, timing, the way I was taught to
+           handle things I couldn&rsquo;t control.</p>
+        <p>All of them explain me. <strong>None of them excuse what I did to you.</strong>
+           You were never the problem I made you feel like.</p>
+      </article>
+
+      <article class="station rv">
+        <span class="no">05 · Now</span>
+        <div class="photo" data-photo="now"></div>
+        <h3>What&rsquo;s actually different</h3>
+        <p>Not promises &mdash; I&rsquo;ve spent enough of your patience on those. Things I
+           have already started doing, that you can check.</p>
+        <p>They&rsquo;re further down this page. Read them with an open mind.</p>
+      </article>
+
+      <article class="station rv">
+        <span class="no">06 · Terminus</span>
+        <h3>Mysore Road</h3>
+        <p>There is a letter. It&rsquo;s already written, sealed, and out of my hands.</p>
+        <p>I can&rsquo;t open it early and neither can you. That&rsquo;s the point &mdash;
+           I don&rsquo;t want to talk you into anything today.</p>
+      </article>
+
+    </div>
+
+    <div class="rail" aria-hidden="true">
+      <div class="fill" id="railFill"></div>
+      <div class="dot" id="railDot"></div>
+    </div>
+    <div class="rail-labels" aria-hidden="true">
+      <span>Then</span><span><b>Mysore Road · 12:00</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== THE LOCKED LETTER ====================== -->
+<section id="letter" aria-labelledby="letterHead">
+  <div class="shell">
+    <p class="eyebrow rv">Sealed</p>
+    <h2 id="letterHead" class="rv d1" style="margin:1.4rem 0 4rem">The letter I can&rsquo;t give you yet</h2>
+
+    <div class="letter-stage rv d2">
+      <div class="envelope" id="envelope" role="img"
+           aria-label="A sealed letter, blurred and locked. It cannot be opened yet.">
+        <div class="paper">
+          <div class="hand" aria-hidden="true">
+            My Sonahakshi,<br />
+            <span class="short">I have thought about</span>
+            this every night since &mdash; the way your voice went quiet,
+            and how long it took me to notice.
+            <span class="shorter">I understand now.</span>
+            There are things I could never say out loud without
+            trying to fix your face while I said them, so I am
+            writing them instead, and I am going to let you
+            <span class="short">read them without me</span>
+            watching, and without me asking for anything back.
+            You deserve so much more from me &mdash;
+            <span class="shorter">all of it, plainly.</span>
+          </div>
+          <div class="seal" aria-hidden="true"></div>
+        </div>
+
+        <svg class="lock" viewBox="0 0 100 116" aria-hidden="true">
+          <defs>
+            <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#F6D9A2"/>
+              <stop offset="48%" stop-color="#F0C27B"/>
+              <stop offset="100%" stop-color="#B8873F"/>
+            </linearGradient>
+          </defs>
+          <path class="shackle" d="M28 46 V32 a22 22 0 0 1 44 0 V46" stroke="url(#goldGrad)" />
+          <rect class="body" x="14" y="44" width="72" height="60" rx="12" fill="url(#goldGrad)" />
+          <circle class="hole" cx="50" cy="68" r="7.5" />
+          <rect class="hole" x="46.6" y="68" width="6.8" height="18" rx="3.4" />
+        </svg>
+      </div>
+    </div>
+
+    <p class="letter-note rv d3">
+      This letter will be delivered to you on
+      <b>September 4th 2026</b> at <b>12.00pm</b> in
+      <b>Mysore Road Metro Station</b>.
+    </p>
+    <p class="denied-msg" id="denied" aria-live="polite">Not yet. It isn&rsquo;t time.</p>
+  </div>
+</section>
+
+<!-- ============================ GALLERY ============================ -->
+<section id="gallery" aria-label="Us">
+  <div class="shell">
+    <p class="eyebrow rv">It was real</p>
+    <h2 class="rv d1" style="margin:1.4rem 0 4rem">It still is...</h2>
+    <div class="grid" id="galleryGrid"></div>
+  </div>
+</section>
+
+<!-- ============================ PROMISES ============================ -->
+<section id="promises">
+  <div class="shell">
+    <p class="eyebrow rv">Not Promises · Commitments</p>
+    <h2 class="rv d1" style="margin:1.4rem 0 1.6rem">Things you can hold me to</h2>
+    <p class="rv d2" style="max-width:44ch">Words got us here. So these are specific enough
+       that you&rsquo;ll know immediately if I break them.</p>
+    <ol>
+      <li class="rv"><p><b>I will remember the details to the best of my knowledge.</b>
+        I wont give any excuses that i forgot, because i want to remember the beautiful moments with you and be your comfort for the sad ones.</p></li>
+      <li class="rv"><p><b>When you tell me I hurt you, my first sentence isn&rsquo;t a defence.</b>
+        No &ldquo;but&rdquo;, no context, no explaining what I meant. I listen all the way to the end first.</p></li>
+      <li class="rv"><p><b>I&rsquo;m working on my emotions so that i understand better.</b>
+        It stopped being fair to make you the person who teaches me the bare minimums.</p></li>
+      <li class="rv"><p><b>Your no is a full answer.</b>
+        I don&rsquo;t negotiate it, wear it down, or come back at it from another angle.</p></li>
+      <li class="rv"><p><b>You never have to shrink or compromise to keep the peace with me again.</b>
+        If you feel yourself doing it, say the word and I stop whatever I&rsquo;m doing.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================ CLOSING ============================ -->
+<section id="close">
+  <div class="shell">
+    <p class="big rv">I&rsquo;m not asking you to forgive me today.</p>
+    <p class="fine rv d1">
+      I&rsquo;m asking you to believe that I finally see it &mdash; clearly, without needing
+      you to explain it to me one more time. Whatever you decide after that is yours,
+      and I&rsquo;ll respect it completely.
+    </p>
+    <p class="fine rv d2">
+      I&rsquo;ll be on that platform at <strong>12:00</strong>, with the letter, whether
+      or not you come. There&rsquo;s no version of this where you owe me your presence.
+    </p>
+    <p class="sign rv d3">Nikhil</p>
+    <p class="place rv d4">Mysore Road Metro Station · 4 September 2026</p>
+  </div>
+</section>
+
+</main>
+
+<div id="ask" role="dialog" aria-modal="true" aria-labelledby="askQ" hidden>
+  <!-- inside the dialog, so it paints ABOVE the dark scrim and below the card.
+       Outside it, the 82%-opaque backdrop swallowed the whole display. -->
+  <canvas id="fireworks" aria-hidden="true" hidden></canvas>
+  <div class="ask-card" id="askCard">
+    <p class="eyebrow">4 September 2026 · 12:00</p>
+    <h2 class="ask-q" id="askQ">Will you come?</h2>
+    <p class="ask-sub" id="askSub">Mysore Road Metro Station. I&rsquo;ll have the letter with me.</p>
+    <div class="ask-actions">
+      <button type="button" class="btn-yes" id="askYes">Yes</button>
+      <button type="button" class="btn-no"  id="askNo">No</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* Two different kinds of motion, treated differently.
+
+     Looping decoration (petals, "Love you" sprinkles, drifting glow) plays
+     forever on its own, so it honours the OS "reduce motion" setting.
+
+     The station track and the metro train are scroll-driven — they only move
+     when the reader moves — and they are the substance of the page, so they
+     stay on regardless. ?motion=calm stops everything. */
+  var qs         = location.search;
+  var forceCalm  = /[?&]motion=calm\b/.test(qs);
+  var forceFull  = /[?&]motion=full\b/.test(qs);
+  var prefersRed = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var calmLoops  = forceCalm || (!forceFull && prefersRed);
+  var reduce     = forceCalm;
+
+  if(calmLoops) document.documentElement.classList.add('calm-loops');
+  if(forceCalm) document.documentElement.classList.add('calm');
+
+  /* =====================================================================
+     Gate
+     ===================================================================== */
+  var gate = document.getElementById('gate');
+  var enter = document.getElementById('enter');
+  document.body.style.overflow = 'hidden';
+
+  function openPage(){
+    gate.classList.add('gone');
+    document.body.style.overflow = '';
+    window.scrollTo(0, 0);
+    setTimeout(reveal, 120);
+  }
+  enter.addEventListener('click', openPage);
+
+  /* =====================================================================
+     Petals — soft ambient fall
+     ===================================================================== */
+  (function petals(){
+    if(calmLoops) return;
+    var amb = document.getElementById('ambient');
+    var cols = ['#F472B6','#EC4899','#F0C27B','#C98BA8'];
+    for(var i=0;i<10;i++){
+      var p = document.createElement('span');
+      p.className = 'petal';
+      var s = 5 + Math.random()*8;
+      p.style.width = s+'px';
+      p.style.height = (s*0.72)+'px';
+      p.style.left = (Math.random()*100)+'vw';
+      p.style.background = cols[i%cols.length];
+      p.style.borderRadius = '60% 0 60% 0';
+      p.style.setProperty('--o', (0.14 + Math.random()*0.26).toFixed(2));
+      p.style.setProperty('--drift', (Math.random()*160-80)+'px');
+      p.style.animationDuration = (17 + Math.random()*20)+'s';
+      p.style.animationDelay = (-Math.random()*32)+'s';
+      amb.appendChild(p);
+    }
+  })();
+
+  /* =====================================================================
+     "Love you" sprinkles
+     ===================================================================== */
+  (function sprinkles(){
+    var cols = ['#F472B6','#EC4899','#F0C27B','#C98BA8','#F6EAE6'];
+
+    function seed(host, count, minSize, maxSize, baseOpacity, opacityRange, keepCentreClear){
+      var frag = document.createDocumentFragment();
+      for(var i=0;i<count;i++){
+        var w = document.createElement('span');
+        w.className = 'loveword';
+        w.textContent = 'Love you';
+        w.style.left = (Math.random()*104 - 2) + '%';
+        w.style.fontSize = (minSize + Math.random()*(maxSize-minSize)).toFixed(2) + 'rem';
+        w.style.color = cols[i % cols.length];
+        w.style.setProperty('--r', (Math.random()*30 - 15).toFixed(1) + 'deg');
+        w.style.setProperty('--o', (baseOpacity + Math.random()*opacityRange).toFixed(2));
+        w.style.setProperty('--drift', (Math.random()*180 - 90).toFixed(0) + 'px');
+        if(calmLoops){
+          /* Reduced motion asked for stillness, not emptiness — scatter the
+             words in place instead of dropping them from the feature list. */
+          /* A drifting word clears bad placements on its own; a static one
+             sits there forever, so hold the centre band open for the text. */
+          var t = Math.random()*94;
+          if(keepCentreClear && t > 34 && t < 70) t = (t < 52) ? t - 30 : t + 26;
+          w.style.top = t.toFixed(1) + '%';
+          w.style.animation = 'none';
+          w.style.opacity = w.style.getPropertyValue('--o');
+        } else {
+          w.style.animationDuration = (16 + Math.random()*20).toFixed(1) + 's';
+          w.style.animationDelay = (-Math.random()*34).toFixed(1) + 's';
+        }
+        frag.appendChild(w);
+      }
+      host.appendChild(frag);
+    }
+
+    /* plenty of them, but kept under the words — the apology has to stay readable */
+    seed(document.getElementById('ambient'), 18, 0.8, 1.8, 0.10, 0.16);
+    /* the landing has almost no text to compete with, so let it be lush */
+    seed(document.getElementById('gateSprinkles'), 22, 0.9, 2.4, 0.20, 0.42, true);
+  })();
+
+  /* =====================================================================
+     Countdown → 4 Sep 2026, 12:00 IST (UTC+05:30)
+     ===================================================================== */
+  var TARGET = new Date('2026-09-04T12:00:00+05:30').getTime();
+  var els = {
+    dd:document.getElementById('dd'), hh:document.getElementById('hh'),
+    mm:document.getElementById('mm'), ss:document.getElementById('ss')
+  };
+  var clock = document.getElementById('clock');
+  var note  = document.getElementById('clockNote');
+
+  function pad(n){ return (n<10?'0':'') + n; }
+
+  function hasArrived(){ return Date.now() >= TARGET; }
+
+  /* Queried fresh rather than closed over: tick() runs once immediately, before
+     the letter's own variables further down have been assigned. */
+  function markArrived(){
+    var e = document.getElementById('envelope');
+    if(e) e.classList.add('arrived');
+  }
+
+  function tick(){
+    var diff = TARGET - Date.now();
+    if(diff <= 0){
+      clock.classList.add('hide');
+      note.textContent = 'It’s time. Mysore Road Metro Station.';
+      markArrived();          // keep the lock's story in step with the clock
+      clearInterval(timer);
+      return;
+    }
+    var s = Math.floor(diff/1000);
+    els.dd.textContent = pad(Math.floor(s/86400));
+    els.hh.textContent = pad(Math.floor(s%86400/3600));
+    els.mm.textContent = pad(Math.floor(s%3600/60));
+    els.ss.textContent = pad(s%60);
+  }
+  /* interval first, so the very first tick can clear it if 12:00 has passed */
+  var timer = setInterval(tick, 1000);
+  tick();
+
+  /* =====================================================================
+     Photos — every path comes from window.PHOTOS at the top of the file.
+     An empty path removes its frame rather than leaving a broken box.
+     Runs before reveal() and layout() so both measure the final page.
+     ===================================================================== */
+  (function photos(){
+    var P = window.PHOTOS || {};
+    var story = P.story || {};
+
+    var boxes = document.querySelectorAll('[data-photo]');
+    for(var i=0;i<boxes.length;i++){
+      var box = boxes[i];
+      var src = story[box.getAttribute('data-photo')];
+      if(!src){ box.parentNode.removeChild(box); continue; }
+      var im = document.createElement('img');
+      im.src = src; im.alt = ''; im.loading = 'lazy';
+      box.appendChild(im);
+    }
+
+    var grid = document.getElementById('galleryGrid');
+    if(!grid) return;
+    var shots = (P.gallery || []).filter(function(g){ return g && g.src; });
+
+    if(!shots.length){
+      /* hidden rather than removed — the train still measures against it */
+      var sec = document.getElementById('gallery');
+      if(sec) sec.hidden = true;
+      return;
+    }
+    shots.forEach(function(g, i){
+      var fig = document.createElement('figure');
+      fig.className = 'rv' + (i ? ' d' + Math.min(i, 5) : '');
+      var im = document.createElement('img');
+      im.src = g.src; im.alt = g.caption || ''; im.loading = 'lazy';
+      var cap = document.createElement('figcaption');
+      cap.textContent = g.caption || '';
+      fig.appendChild(im); fig.appendChild(cap);
+      grid.appendChild(fig);
+    });
+  })();
+
+  /* =====================================================================
+     Reveal on scroll
+     ===================================================================== */
+  var io = null;
+  function reveal(){
+    var items = document.querySelectorAll('.rv, #gallery figure, .station');
+    if(!('IntersectionObserver' in window)){
+      for(var i=0;i<items.length;i++) items[i].classList.add('live');
+      return;
+    }
+    if(io) io.disconnect();
+    io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('live'); io.unobserve(e.target); }
+      });
+    }, { threshold:0.16, rootMargin:'0px 0px -8% 0px' });
+    items.forEach(function(el){ io.observe(el); });
+  }
+  reveal();
+
+  /* =====================================================================
+     The horizontal track — scroll-scrubbed, desktop only.
+     The wrapper's height is derived from the track's real width so the
+     scrub always ends exactly on the terminus.
+     ===================================================================== */
+  var wrap    = document.getElementById('line-wrap');
+  var track   = document.getElementById('track');
+  var fill    = document.getElementById('railFill');
+  var dot     = document.getElementById('railDot');
+  var horizontal = false;
+  var distance   = 0;
+
+  var stations = document.querySelectorAll('.station');
+
+  function layout(){
+    horizontal = window.innerWidth > 860 && !reduce;
+
+    /* In horizontal mode the sideways scrub IS the reveal. Stations sitting
+       off to the right never intersect the viewport, so the observer would
+       leave them at opacity 0 — show them all up front instead. */
+    for(var i=0;i<stations.length;i++){
+      stations[i].classList.toggle('live', horizontal || stations[i].classList.contains('live'));
+    }
+
+    if(!horizontal){
+      wrap.style.height = '';
+      track.style.transform = '';
+    } else {
+      distance = Math.max(0, track.scrollWidth - window.innerWidth);
+      // vertical scroll needed = viewport (for the pin) + horizontal distance
+      wrap.style.height = (window.innerHeight + distance) + 'px';
+    }
+
+    buildRail();   // rail geometry depends on the settled page height
+    onScroll();
+  }
+
+  var ticking = false;
+  function onScroll(){
+    metroUpdate();          // the train runs on every layout, not just desktop
+
+    /* the foot of the page is the cue for the ask */
+    if((window.scrollY + window.innerHeight) >= (document.documentElement.scrollHeight - 6)){
+      openAsk();
+    }
+    if(!horizontal) return;
+    var top = wrap.offsetTop;
+    var p = (window.scrollY - top) / (wrap.offsetHeight - window.innerHeight);
+    p = p < 0 ? 0 : (p > 1 ? 1 : p);
+    track.style.transform = 'translate3d(' + (-p * distance) + 'px,0,0)';
+    var pct = (p*100).toFixed(2) + '%';
+    fill.style.width = pct;
+    dot.style.left  = pct;
+  }
+  function requestScroll(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){ onScroll(); ticking = false; });
+  }
+
+  window.addEventListener('scroll', requestScroll, { passive:true });
+  window.addEventListener('resize', layout);
+  window.addEventListener('load', layout);
+  /* rAF is paused while the tab is hidden, so re-sync the track on return */
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden) onScroll();
+  });
+  layout();
+
+  /* =====================================================================
+     Metro train — rides a curve down the right edge, starting when the
+     photographs come into play and finishing at the foot of the page.
+     ===================================================================== */
+  var metro      = document.getElementById('metro');
+  var metroSvg   = document.getElementById('metroSvg');
+  var railPath   = document.getElementById('metroRail');
+  var trailPath  = document.getElementById('metroTrail');
+  var stopsGroup = document.getElementById('metroStops');
+  var trainEl    = document.getElementById('metroTrain');
+  var galleryEl  = document.getElementById('gallery');
+  var promisesEl = document.getElementById('promises');
+  /* the train wakes at the photographs — but with no photos the gallery is
+     hidden and measures 0, so fall through to the next section instead */
+  function trainAnchor(){
+    return (galleryEl && galleryEl.offsetHeight) ? galleryEl : promisesEl;
+  }
+
+  var railLen = 0, trainScale = 1, stopNodes = [];
+  var STOPS   = [0.26, 0.54, 0.82];
+
+  function buildRail(){
+    if(reduce || !metro) return;   // layout() can fire before these vars are assigned
+    var W = metro.clientWidth, H = metro.clientHeight;
+    if(!W || !H) return;
+
+    metroSvg.setAttribute('width',  W);
+    metroSvg.setAttribute('height', H);
+    metroSvg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    var d = 'M ' + (0.62*W) + ' -40' +
+            ' C ' + (0.02*W) + ' ' + (0.20*H) + ', ' + (1.02*W) + ' ' + (0.33*H) + ', ' + (0.50*W) + ' ' + (0.50*H) +
+            ' C ' + (-0.02*W) + ' ' + (0.67*H) + ', ' + (0.98*W) + ' ' + (0.80*H) + ', ' + (0.60*W) + ' ' + (H+40);
+
+    railPath.setAttribute('d', d);
+    trailPath.setAttribute('d', d);
+
+    railLen = railPath.getTotalLength();
+    trailPath.style.strokeDasharray  = railLen;
+    trailPath.style.strokeDashoffset = railLen;
+
+    trainScale = Math.max(0.55, Math.min(1.5, W/70));
+
+    stopsGroup.textContent = '';
+    stopNodes = STOPS.map(function(f){
+      var p = railPath.getPointAtLength(railLen * f);
+      var c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('class','metro-stop');
+      c.setAttribute('cx', p.x); c.setAttribute('cy', p.y);
+      c.setAttribute('r', 3.4 * trainScale);
+      stopsGroup.appendChild(c);
+      return c;
+    });
+  }
+
+  function metroUpdate(){
+    var anchor = trainAnchor();
+    if(reduce || !railLen || !anchor) return;
+
+    var start = anchor.offsetTop - window.innerHeight * 0.55;
+    var end   = document.documentElement.scrollHeight - window.innerHeight;
+    if(end <= start){ metro.classList.remove('on'); return; }
+
+    var p = (window.scrollY - start) / (end - start);
+    if(p <= 0){ metro.classList.remove('on'); p = 0; }
+    else { metro.classList.add('on'); if(p > 1) p = 1; }
+
+    trailPath.style.strokeDashoffset = railLen * (1 - p);
+
+    var len = railLen * p;
+    var pt  = railPath.getPointAtLength(len);
+
+    /* Sample a fixed 1-unit span for the tangent. Reading forward from `len`
+       alone collapses to zero length at the very end of the path, which snaps
+       the carriage sideways on the last pixel of scroll. */
+    var lb  = Math.min(railLen, len + 1);
+    var la  = Math.max(0, lb - 1);
+    var a   = railPath.getPointAtLength(la);
+    var b   = railPath.getPointAtLength(lb);
+    var ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+
+    // the carriage is drawn nose-down, so subtract 90° to align it to the tangent
+    trainEl.setAttribute('transform',
+      'translate(' + pt.x + ',' + pt.y + ') rotate(' + (ang - 90) + ') scale(' + trainScale + ')');
+
+    for(var i=0;i<stopNodes.length;i++){
+      stopNodes[i].classList.toggle('passed', p >= STOPS[i]);
+    }
+  }
+
+  /* =====================================================================
+     The lock refuses to open — gently
+     ===================================================================== */
+  var env = document.getElementById('envelope');
+  var denied = document.getElementById('denied');
+  var msgsWaiting = [
+    'Not yet. It isn’t time.',
+    'September 4th. I promise.',
+    '12:00. Mysore Road. Not a minute before.',
+    'Some things shouldn’t be rushed.'
+  ];
+  /* after 12:00 the refusals would be a lie, and she is most likely reading
+     this while standing on the platform next to you */
+  var msgsArrived = [
+    'It’s time. Look up.',
+    'I’m here. Put your phone down.',
+    'It was never going to be on a screen.',
+    'Turn around — I have it with me.'
+  ];
+  var mi = 0, hideT;
+  env.addEventListener('click', function(){
+    var arrived = hasArrived();
+    if(arrived) markArrived();
+    else {
+      env.classList.remove('shake');
+      void env.offsetWidth;            // restart the animation
+      env.classList.add('shake');      // it only refuses while it still can
+    }
+    var msgs = arrived ? msgsArrived : msgsWaiting;
+    denied.textContent = msgs[mi % msgs.length]; mi++;
+    denied.classList.add('on');
+    clearTimeout(hideT);
+    hideT = setTimeout(function(){ denied.classList.remove('on'); }, 2600);
+  });
+
+  /* =====================================================================
+     Fireworks — plain canvas, no library.
+     ===================================================================== */
+  var fireworks = (function(){
+    var cv = document.getElementById('fireworks');
+    var ctx = null, parts = [], flashes = [], raf = null, launcher = null;
+    var COLS = ['#F472B6','#EC4899','#F0C27B','#FBE3B8','#C98BA8','#FFFFFF'];
+
+    function size(){
+      if(!ctx) return;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cv.width  = Math.floor(window.innerWidth  * dpr);
+      cv.height = Math.floor(window.innerHeight * dpr);
+      cv.style.width  = window.innerWidth  + 'px';
+      cv.style.height = window.innerHeight + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function burst(x, y){
+      /* The launcher is a timer but ageing happens per animation frame. In a
+         backgrounded tab timers keep firing while frames are paused, so sparks
+         would pile up with nothing retiring them. Hold the population down. */
+      if(parts.length > 1200) parts.splice(0, parts.length - 800);
+      if(flashes.length > 12) flashes.splice(0, flashes.length - 8);
+
+      var n = 54 + Math.floor(Math.random()*30);
+      var main = COLS[Math.floor(Math.random()*COLS.length)];
+      flashes.push({ x:x, y:y, r:6, life:1 });          // the pop
+      for(var i=0;i<n;i++){
+        var a  = (Math.PI*2)*(i/n) + Math.random()*0.16;
+        var sp = 2.0 + Math.random()*5.0;
+        parts.push({
+          x:x, y:y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp,
+          life:1, decay:0.007 + Math.random()*0.010,
+          c: Math.random() < 0.25 ? COLS[Math.floor(Math.random()*COLS.length)] : main,
+          r: 1.6 + Math.random()*2.2
+        });
+      }
+    }
+
+    function frame(){
+      var w = window.innerWidth, h = window.innerHeight;
+      ctx.clearRect(0, 0, w, h);
+      ctx.globalCompositeOperation = 'lighter';   // sparks glow where they overlap
+
+      for(var f=flashes.length-1;f>=0;f--){
+        var fl = flashes[f];
+        fl.r += 5.5; fl.life -= 0.075;
+        if(fl.life <= 0){ flashes.splice(f,1); continue; }
+        ctx.globalAlpha = fl.life * 0.5;
+        ctx.strokeStyle = '#FBE3B8'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(fl.x, fl.y, fl.r, 0, Math.PI*2); ctx.stroke();
+      }
+
+      for(var i=parts.length-1;i>=0;i--){
+        var p = parts[i];
+        p.vy += 0.045;                 // gravity
+        p.vx *= 0.985; p.vy *= 0.985;  // drag
+        p.x += p.vx;  p.y += p.vy;
+        p.life -= p.decay;
+        if(p.life <= 0){ parts.splice(i,1); continue; }
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.c;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+      }
+
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+      raf = requestAnimationFrame(frame);
+    }
+
+    function start(){
+      if(!cv || !cv.getContext) return;
+      ctx = cv.getContext('2d');
+      cv.hidden = false;
+      size();
+      window.addEventListener('resize', size);
+
+      /* This one always runs, even under "reduce motion". It is a direct,
+         one-off answer to a button she chose to press — not ambient decoration
+         looping in the background — and it is the whole point of the moment. */
+
+      // an opening volley so something happens the instant she says yes
+      burst(window.innerWidth*0.22, window.innerHeight*0.26);
+      burst(window.innerWidth*0.78, window.innerHeight*0.32);
+      burst(window.innerWidth*0.5,  window.innerHeight*0.16);
+
+      var salvos = 0;
+      (function launch(){
+        burst(window.innerWidth*(0.12 + Math.random()*0.76),
+              window.innerHeight*(0.12 + Math.random()*0.5));
+        salvos++;
+        launcher = setTimeout(launch, salvos < 16 ? 260 + Math.random()*300
+                                                 : 1400 + Math.random()*1600);
+      })();
+      frame();
+    }
+
+    function stop(){
+      if(raf) cancelAnimationFrame(raf);
+      if(launcher) clearTimeout(launcher);
+      raf = launcher = null; parts = []; flashes = [];
+      if(ctx) ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      if(cv) cv.hidden = true;
+    }
+
+    return { start:start, stop:stop };
+  })();
+
+  /* =====================================================================
+     The ask — arrives at the foot of the page. Every refusal comes back
+     softer rather than louder.
+     ===================================================================== */
+  var ask     = document.getElementById('ask');
+  var askCard = document.getElementById('askCard');
+  var askQ    = document.getElementById('askQ');
+  var askSub  = document.getElementById('askSub');
+  var askYes  = document.getElementById('askYes');
+  var askNo   = document.getElementById('askNo');
+  var askOpen = false, askDone = false, noCount = 0, lastFocus = null;
+
+  var PLEAS = [
+    { q:'Will you come?',              s:'Mysore Road Metro Station. I’ll have the letter with me.' },
+    { q:'That button doesn’t work.', s:'Only one of them does. Try the other one.' },
+    { q:'I’ll ask you again.',    s:'I have until the 4th, and I’ve finally learned how to wait.' },
+    { q:'Still no?',                   s:'That’s fair. I earned that one. Ask me again in a second.' },
+    { q:'I’ll be there either way.', s:'12:00, by the platform. I’d just rather not stand there on my own.' },
+    { q:'Sonahakshi.',                 s:'Please.' },
+    { q:'I can do this all evening.',  s:'There is nowhere else I would rather be.' }
+  ];
+
+  function openAsk(){
+    if(askOpen || askDone || !ask) return;
+    askOpen = true;
+    lastFocus = document.activeElement;
+    ask.hidden = false;
+    document.body.style.overflow = 'hidden';
+    setTimeout(function(){ ask.classList.add('in'); }, 20);
+    setTimeout(function(){ askYes.focus(); }, 320);
+  }
+
+  function closeAsk(){
+    ask.classList.remove('in');
+    document.body.style.overflow = '';
+    setTimeout(function(){ ask.hidden = true; }, 500);
+    fireworks.stop();
+    if(lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  function refuse(){
+    noCount++;
+    askCard.classList.remove('shake');
+    void askCard.offsetWidth;                 // restart the animation
+    askCard.classList.add('shake');
+    ask.classList.remove('in');
+
+    setTimeout(function(){
+      var p = PLEAS[Math.min(noCount, PLEAS.length - 1)];
+      askQ.textContent   = p.q;
+      askSub.textContent = p.s;
+
+      /* Yes grows, No retreats — but never past a tappable size. The button
+         is meant to look reluctant, not to become impossible to press. */
+      askYes.style.transform = 'scale(' + Math.min(1 + noCount*0.06, 1.28) + ')';
+      askNo.style.transform  = 'scale(' + Math.max(1 - noCount*0.05, 0.85) + ')';
+      askNo.style.opacity    = Math.max(1 - noCount*0.09, 0.5);
+
+      ask.classList.add('in');
+      askYes.focus();
+    }, 620);
+  }
+
+  function celebrate(){
+    askDone = true;
+    askCard.classList.add('won');
+    askCard.innerHTML =
+      '<p class="eyebrow">4 September 2026 &middot; 12:00</p>' +
+      '<p class="won-script">I&rsquo;ll be waiting for you</p>' +
+      '<p class="ask-sub">Mysore Road Metro Station, platform side. I&rsquo;ll have the letter, ' +
+      'and nothing to prove &mdash; just somewhere to start again.</p>' +
+      '<p class="won-note">See you there</p>' +
+      '<div class="ask-actions"><button type="button" class="btn-yes" id="askClose">Close</button></div>';
+    var close = document.getElementById('askClose');
+    close.addEventListener('click', closeAsk);
+    close.focus();
+    fireworks.start();
+  }
+
+  if(ask){
+    askNo.addEventListener('click', refuse);
+    askYes.addEventListener('click', celebrate);
+
+    /* keep focus inside the dialog while it is open */
+    ask.addEventListener('keydown', function(e){
+      if(e.key !== 'Tab') return;
+      var f = ask.querySelectorAll('button');
+      if(!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+    });
+  }
+
+  /* everything is declared now — build the rail for real */
+  buildRail();
+  metroUpdate();
+
+})();
+</script>
+</body>
+</html>
